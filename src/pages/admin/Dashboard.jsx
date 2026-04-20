@@ -1,12 +1,12 @@
 import { useMemo } from "react";
 import { styles, hoverCard, hoverRow } from "./styles/dashboard.js";
 
-/* ── Sub-components ───────────────────────────────────────────── */
 
 const StatusBadge = ({ status }) => {
   const { base, variants } = styles.statusBadge;
   const variant = variants[status] ?? variants.pending;
-  return <span style={{ ...base, ...variant }}>{status}</span>;
+  const label = status.charAt(0).toUpperCase() + status.slice(1);
+  return <span style={{ ...base, ...variant }}>{label}</span>;
 };
 
 const Avatar = ({ name }) => {
@@ -67,18 +67,15 @@ export default function AdminDashboard({ bookings }) {
   const maxSvc = topServices[0]?.[1] || 1;
 
   const statCards = [
-    { label: "Total bookings", value: bookings.length },
-    { label: "Today",          value: todayBk },
-    { label: "Pending",        value: pending },
-    { label: "Cancelled",      value: cancelled },
+    { label: "Total bookings", value: bookings.length,  icon: "fa-calendar-check" },
+    { label: "Today",          value: todayBk,          icon: "fa-sun" },
+    { label: "Pending",        value: pending,           icon: "fa-clock" },
+    { label: "Cancelled",      value: cancelled,         icon: "fa-ban" },
   ];
 
   return (
     <div style={styles.page}>
-      <link
-        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;900&display=swap"
-        rel="stylesheet"
-      />
+      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
 
       {/* Header */}
       <div style={styles.header.wrapper}>
@@ -88,9 +85,7 @@ export default function AdminDashboard({ bookings }) {
         </div>
         <h1 style={styles.header.title}>Dashboard</h1>
         <p style={styles.header.date}>
-          {today.toLocaleDateString("en-US", {
-            weekday: "long", month: "long", day: "numeric", year: "numeric",
-          })}
+          {today.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
         </p>
       </div>
 
@@ -105,6 +100,12 @@ export default function AdminDashboard({ bookings }) {
               onMouseEnter={e => hoverCard.enter(e.currentTarget)}
               onMouseLeave={e => hoverCard.leave(e.currentTarget)}
             >
+              <i className={`fas ${s.icon}`} style={{
+                fontSize: 13,
+                marginBottom: 14,
+                display: "block",
+                color: isDark ? "rgba(255,255,255,0.4)" : "#ccc",
+              }} />
               <p style={styles.statCard.label(isDark)}>{s.label}</p>
               <p style={styles.statCard.value(isDark)}>{s.value}</p>
             </div>
@@ -114,7 +115,6 @@ export default function AdminDashboard({ bookings }) {
 
       {/* Charts Row */}
       <div style={styles.grid.charts}>
-
         {/* 7-day bar chart */}
         <div style={styles.card.base}>
           <p style={styles.cardHeader.eyebrow}>Last 7 days</p>
@@ -124,10 +124,7 @@ export default function AdminDashboard({ bookings }) {
               const isToday = i === 6;
               return (
                 <div key={i} style={styles.bar.col}>
-                  <div style={{
-                    ...styles.bar.fill(isToday),
-                    height: `${(d.count / maxDay) * 52 + 4}px`,
-                  }} />
+                  <div style={{ ...styles.bar.fill(isToday), height: `${(d.count / maxDay) * 52 + 4}px` }} />
                   <span style={styles.bar.label(isToday)}>{d.label}</span>
                 </div>
               );
@@ -139,9 +136,7 @@ export default function AdminDashboard({ bookings }) {
         <div style={styles.card.base}>
           <p style={styles.cardHeader.eyebrow}>Status</p>
           <p style={styles.cardHeader.title}>
-            {bookings.length > 0
-              ? `${Math.round((approved / bookings.length) * 100)}% approved`
-              : "No data"}
+            {bookings.length > 0 ? `${Math.round((approved / bookings.length) * 100)}% approved` : "No data"}
           </p>
           <MiniBar label="Approved"  value={approved}  max={bookings.length} />
           <MiniBar label="Pending"   value={pending}   max={bookings.length} />
@@ -191,7 +186,7 @@ export default function AdminDashboard({ bookings }) {
                 {recent.map(b => (
                   <tr
                     key={b.id}
-                    style={{ borderTop: `1px solid #EEEDFE`, transition: "background 0.15s" }}
+                    style={{ borderTop: "1px solid #EEEDFE", transition: "background 0.15s" }}
                     onMouseEnter={e => hoverRow.enter(e.currentTarget)}
                     onMouseLeave={e => hoverRow.leave(e.currentTarget)}
                   >
@@ -203,9 +198,7 @@ export default function AdminDashboard({ bookings }) {
                     </td>
                     <td style={styles.table.tdService}>{b.serviceName}</td>
                     <td style={styles.table.tdDate}>{b.date} · {b.time}</td>
-                    <td style={styles.table.tdStatus}>
-                      <StatusBadge status={b.status} />
-                    </td>
+                    <td style={styles.table.tdStatus}><StatusBadge status={b.status} /></td>
                   </tr>
                 ))}
               </tbody>

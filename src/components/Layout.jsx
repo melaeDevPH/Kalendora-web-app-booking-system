@@ -3,9 +3,9 @@ import Sidebar from "./Sidebar";
 
 export default function Layout({ user, page, setPage, onLogout, children }) {
   const [open, setOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  // detect screen size
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
     check();
@@ -13,10 +13,24 @@ export default function Layout({ user, page, setPage, onLogout, children }) {
     return () => window.removeEventListener("resize", check);
   }, []);
 
+  const sidebarWidth = isMobile ? 0 : collapsed ? 72 : 240;
+
   return (
     <div style={{ display: "flex" }}>
-      
-      {/* Sidebar */}
+
+      {/* Mobile backdrop */}
+      {isMobile && open && (
+        <div
+          onClick={() => setOpen(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.45)",
+            zIndex: 999,
+          }}
+        />
+      )}
+
       <Sidebar
         user={user}
         page={page}
@@ -24,49 +38,48 @@ export default function Layout({ user, page, setPage, onLogout, children }) {
         open={open}
         setOpen={setOpen}
         isMobile={isMobile}
+        collapsed={collapsed}
+        setCollapsed={setCollapsed}
+        onLogout={onLogout}
       />
 
-      {/* Main */}
-      <div
-        style={{
-          flex: 1,
-          marginLeft: isMobile ? 0 : 240, // ✅ push content on desktop
-          background: "#F8FAFC",
-          minHeight: "100vh"
-        }}
-      >
-        
-        {/* Topbar */}
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: 16,
-          borderBottom: "1px solid #E2E8F0",
-          background: "#fff"
-        }}>
-          
-          {/* Show toggle ONLY on mobile */}
-          {isMobile && (
-            <button
-              onClick={() => setOpen(true)}
-              style={{
-                fontSize: 18,
-                background: "none",
-                border: "none",
-                cursor: "pointer"
-              }}
-            >
-              ☰
-            </button>
-          )}
+      {/* Main content — no navbar */}
+      <div style={{
+        flex: 1,
+        marginLeft: sidebarWidth,
+        background: "#F8FAFC",
+        minHeight: "100vh",
+        transition: "margin-left 0.25s ease",
+      }}>
 
-          <h3 style={{ margin: 0 }}>{page}</h3>
+        {/* Mobile hamburger — floating top-left */}
+        {isMobile && (
+          <button
+            onClick={() => setOpen(true)}
+            style={{
+              position: "fixed",
+              top: 14,
+              left: 14,
+              zIndex: 998,
+              background: "#18283b",
+              border: "none",
+              color: "#fff",
+              width: 40,
+              height: 40,
+              borderRadius: 10,
+              fontSize: 16,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+            }}
+          >
+            <i className="fa-solid fa-bars" />
+          </button>
+        )}
 
-          <button onClick={onLogout}>Logout</button>
-        </div>
-
-        <div style={{ padding: 20 }}>
+        <div style={{ padding: isMobile ? "64px 20px 20px" : "20px" }}>
           {children}
         </div>
       </div>

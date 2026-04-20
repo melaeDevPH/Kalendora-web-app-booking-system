@@ -12,22 +12,23 @@ const StatusBadge = ({ status }) => {
   return <span style={{ ...s.badge.base, ...variant }}>{label}</span>;
 };
 
-const Btn = ({ children, onClick, variant = "approve" }) => (
+const Btn = ({ children, onClick, variant = "approve", icon }) => (
   <button
     onClick={onClick}
     style={{ ...s.btn.base, ...s.btn.variants[variant] }}
-    onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.8"; }}
-    onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
+    onMouseEnter={(e) => hover.btnEnter(e.currentTarget)}
+    onMouseLeave={(e) => hover.btnLeave(e.currentTarget)}
   >
+    {icon && <i className={`fas ${icon}`} style={{ marginRight: 5, fontSize: 10 }} />}
     {children}
   </button>
 );
 
 const ActionButtons = ({ booking, onApprove, onDeny, onReschedule }) => (
   <div style={s.table.actionRow}>
-    <Btn variant="approve"    onClick={() => onApprove(booking.id)}>✓ Approve</Btn>
-    <Btn variant="deny"       onClick={() => onDeny(booking.id)}>✕ Deny</Btn>
-    <Btn variant="reschedule" onClick={() => onReschedule(booking)}>Reschedule</Btn>
+    <Btn variant="approve"    icon="fa-check"        onClick={() => onApprove(booking.id)}>Approve</Btn>
+    <Btn variant="deny"       icon="fa-times"        onClick={() => onDeny(booking.id)}>Deny</Btn>
+    <Btn variant="reschedule" icon="fa-calendar-alt" onClick={() => onReschedule(booking)}>Reschedule</Btn>
   </div>
 );
 
@@ -62,10 +63,7 @@ const AdminBookings = ({ bookings, setBookings }) => {
 
   return (
     <div style={s.page}>
-      <link
-        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;900&display=swap"
-        rel="stylesheet"
-      />
+      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
 
       {/* Header */}
       <div style={s.header.wrapper}>
@@ -75,14 +73,17 @@ const AdminBookings = ({ bookings, setBookings }) => {
 
       {/* Filters */}
       <div style={s.filters.wrapper}>
-        <input
-          placeholder="Search client or service…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={s.filters.input}
-          onFocus={(e) => hover.inputFocus(e.target)}
-          onBlur={(e)  => hover.inputBlur(e.target)}
-        />
+        <div style={{ position: "relative", flex: "1 1 200px", minWidth: 160 }}>
+          <i className="fas fa-search" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", fontSize: 11, color: "#ccc", pointerEvents: "none" }} />
+          <input
+            placeholder="Search client or service…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ ...s.filters.input, paddingLeft: 32, width: "100%", boxSizing: "border-box" }}
+            onFocus={(e) => hover.inputFocus(e.target)}
+            onBlur={(e)  => hover.inputBlur(e.target)}
+          />
+        </div>
         <input
           type="date"
           value={dateFilter}
@@ -109,6 +110,7 @@ const AdminBookings = ({ bookings, setBookings }) => {
       {/* Empty state */}
       {filtered.length === 0 ? (
         <div style={s.empty.wrapper}>
+          <i className="fas fa-calendar-xmark" style={{ fontSize: 32, color: "#e0d9f7", marginBottom: 12, display: "block" }} />
           <p style={s.empty.title}>No bookings found</p>
           <p style={s.empty.sub}>Try adjusting your filters</p>
         </div>
@@ -120,7 +122,7 @@ const AdminBookings = ({ bookings, setBookings }) => {
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
                 <thead>
-                  <tr style={{ borderBottom: `1px solid #EEEDFE` }}>
+                  <tr style={{ borderBottom: "1px solid #EEEDFE" }}>
                     {["Client", "Service", "Date & Time", "Status", "Actions"].map((h) => (
                       <th key={h} style={s.table.th}>{h}</th>
                     ))}
@@ -130,7 +132,7 @@ const AdminBookings = ({ bookings, setBookings }) => {
                   {filtered.map((b) => (
                     <tr
                       key={b.id}
-                      style={{ borderTop: `1px solid #EEEDFE`, transition: "background 0.15s" }}
+                      style={{ borderTop: "1px solid #EEEDFE", transition: "background 0.15s" }}
                       onMouseEnter={(e) => hover.rowEnter(e.currentTarget)}
                       onMouseLeave={(e) => hover.rowLeave(e.currentTarget)}
                     >
@@ -143,9 +145,7 @@ const AdminBookings = ({ bookings, setBookings }) => {
                         <div>{b.date}</div>
                         <div style={s.table.tdDateSub}>{b.time}</div>
                       </td>
-                      <td style={s.table.tdStatus}>
-                        <StatusBadge status={b.status} />
-                      </td>
+                      <td style={s.table.tdStatus}><StatusBadge status={b.status} /></td>
                       <td style={s.table.tdActions}>
                         <ActionButtons
                           booking={b}
@@ -162,10 +162,7 @@ const AdminBookings = ({ bookings, setBookings }) => {
           </div>
 
           {/* Mobile cards */}
-          <div
-            className="mobile-cards"
-            style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))" }}
-          >
+          <div className="mobile-cards" style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))" }}>
             {filtered.map((b) => (
               <div
                 key={b.id}
@@ -180,12 +177,16 @@ const AdminBookings = ({ bookings, setBookings }) => {
                   </div>
                   <StatusBadge status={b.status} />
                 </div>
-
                 <div style={s.card.body}>
-                  <p style={s.card.meta}>{b.date} · {b.time}</p>
-                  <p style={s.card.meta}>{b.serviceName}</p>
+                  <p style={s.card.meta}>
+                    <i className="fas fa-calendar-alt" style={{ marginRight: 6, fontSize: 10, opacity: 0.5 }} />
+                    {b.date} · {b.time}
+                  </p>
+                  <p style={s.card.meta}>
+                    <i className="fas fa-concierge-bell" style={{ marginRight: 6, fontSize: 10, opacity: 0.5 }} />
+                    {b.serviceName}
+                  </p>
                 </div>
-
                 <ActionButtons
                   booking={b}
                   onApprove={(id) => updateStatus(id, "approved")}

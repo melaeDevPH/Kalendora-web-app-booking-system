@@ -4,7 +4,7 @@ const ITEM_HEIGHT = 54;
 const BG = "#18283b";
 
 export default function Sidebar({
-  user, page, setPage, open, setOpen, isMobile, collapsed, setCollapsed
+  user, page, setPage, open, setOpen, isMobile, collapsed, setCollapsed, onLogout
 }) {
   const [hovered, setHovered] = useState(null);
 
@@ -24,13 +24,14 @@ export default function Sidebar({
 
   const activeIndex  = menu.findIndex(m => m.key === page);
   const highlightIdx = hovered !== null ? hovered : activeIndex;
+  const isCollapsed  = collapsed && !isMobile;
 
   return (
     <div style={{
       position: "fixed",
       top: 0,
       left: isMobile ? (open ? 0 : -260) : 0,
-      width: collapsed && !isMobile ? 80 : 240,
+      width: isCollapsed ? 72 : 240,
       height: "100vh",
       background: BG,
       color: "#fff",
@@ -43,35 +44,59 @@ export default function Sidebar({
 
       {/* HEADER */}
       <div style={{
-        height: 70,
+        height: 64,
         display: "flex",
         alignItems: "center",
-        justifyContent: collapsed && !isMobile ? "center" : "space-between",
+        justifyContent: isCollapsed ? "center" : "space-between",
         padding: "0 16px",
+        flexShrink: 0,
       }}>
-        {!(collapsed && !isMobile) && (
-          <h2 style={{ margin: 0, fontSize: 18 }}>Kalendora</h2>
+        {!isCollapsed && (
+          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600 }}>Kalendora</h2>
         )}
 
-        {/* Collapse toggle — desktop only */}
+        {/* Desktop: collapse toggle inside sidebar header */}
         {!isMobile && (
           <button
             onClick={() => setCollapsed(!collapsed)}
             style={{
               background: "none",
               border: "none",
-              color: "#fff",
+              color: "rgba(255,255,255,0.7)",
               cursor: "pointer",
               fontSize: 16,
+              padding: "6px",
+              borderRadius: 6,
+              lineHeight: 1,
             }}
           >
             <i className="fa-solid fa-bars" />
           </button>
         )}
+
+        {/* Mobile: close button */}
+        {isMobile && (
+          <button
+            onClick={() => setOpen(false)}
+            style={{
+              marginLeft: "auto",
+              background: "none",
+              border: "none",
+              color: "rgba(255,255,255,0.7)",
+              cursor: "pointer",
+              fontSize: 18,
+              padding: "6px",
+              borderRadius: 6,
+              lineHeight: 1,
+            }}
+          >
+            <i className="fa-solid fa-xmark" />
+          </button>
+        )}
       </div>
 
       {/* MENU */}
-      <div style={{ position: "relative" }}>
+      <div style={{ position: "relative", flex: 1 }}>
 
         {/* Sliding highlight — desktop only */}
         {!isMobile && highlightIdx >= 0 && (
@@ -85,14 +110,12 @@ export default function Sidebar({
             zIndex: 0,
             pointerEvents: "none",
           }}>
-            {/* White slab */}
             <div style={{
               position: "absolute",
               inset: 0,
               background: "#fff",
               borderRadius: "16px 0 0 16px",
             }} />
-            {/* Concave corner — top */}
             <div style={{
               position: "absolute",
               bottom: "100%", right: 0,
@@ -101,7 +124,6 @@ export default function Sidebar({
               borderBottomRightRadius: "50%",
               boxShadow: "6px 6px 0 6px #fff",
             }} />
-            {/* Concave corner — bottom */}
             <div style={{
               position: "absolute",
               top: "100%", right: 0,
@@ -113,7 +135,6 @@ export default function Sidebar({
           </div>
         )}
 
-        {/* Menu items */}
         {menu.map((item, index) => {
           const isHighlighted = !isMobile && highlightIdx === index;
           const isActive = page === item.key;
@@ -131,10 +152,10 @@ export default function Sidebar({
                 position: "relative",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: collapsed && !isMobile ? "center" : "flex-start",
+                justifyContent: isCollapsed ? "center" : "flex-start",
                 gap: 12,
                 height: ITEM_HEIGHT,
-                padding: collapsed && !isMobile ? 0 : "0 20px",
+                padding: isCollapsed ? 0 : "0 20px",
                 cursor: "pointer",
                 zIndex: 1,
                 color: isHighlighted ? "#0F172A" : isActive && isMobile ? "#60A5FA" : "#CBD5F5",
@@ -145,7 +166,7 @@ export default function Sidebar({
               }}
             >
               <i className={`fa ${item.icon}`} style={{ width: 20, textAlign: "center" }} />
-              {!(collapsed && !isMobile) && <span>{item.label}</span>}
+              {!isCollapsed && <span>{item.label}</span>}
             </div>
           );
         })}
@@ -153,18 +174,90 @@ export default function Sidebar({
 
       {/* FOOTER */}
       <div style={{
-        marginTop: "auto",
-        padding: 16,
-        borderTop: "1px solid #2c3e50",
-        textAlign: collapsed && !isMobile ? "center" : "left",
+        padding: "12px 16px",
+        borderTop: "1px solid rgba(255,255,255,0.08)",
+        flexShrink: 0,
       }}>
-        {!(collapsed && !isMobile) ? (
-          <>
-            <div style={{ fontWeight: 700, fontSize: 14 }}>{user.name}</div>
-            <div style={{ fontSize: 12, opacity: 0.6 }}>{user.role}</div>
-          </>
+        {/* User info */}
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          marginBottom: isCollapsed ? 0 : 10,
+          justifyContent: isCollapsed ? "center" : "flex-start",
+        }}>
+          <div style={{
+            width: 34,
+            height: 34,
+            borderRadius: "50%",
+            background: "rgba(255,255,255,0.12)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+          }}>
+            <i className="fa-solid fa-user" style={{ fontSize: 14 }} />
+          </div>
+          {!isCollapsed && (
+            <div>
+              <div style={{ fontWeight: 600, fontSize: 13 }}>{user.name}</div>
+              <div style={{ fontSize: 11, opacity: 0.5 }}>{user.role}</div>
+            </div>
+          )}
+        </div>
+
+        {/* Logout button */}
+        {!isCollapsed ? (
+          <button
+            onClick={onLogout}
+            style={{
+              width: "100%",
+              background: "rgba(255,255,255,0.07)",
+              border: "0.5px solid rgba(255,255,255,0.12)",
+              color: "rgba(255,255,255,0.75)",
+              fontSize: 13,
+              fontWeight: 500,
+              padding: "8px 0",
+              borderRadius: 8,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = "rgba(255,255,255,0.13)";
+              e.currentTarget.style.color = "#fff";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = "rgba(255,255,255,0.07)";
+              e.currentTarget.style.color = "rgba(255,255,255,0.75)";
+            }}
+          >
+            <i className="fa-solid fa-right-from-bracket" />
+            Log out
+          </button>
         ) : (
-          <i className="fa-solid fa-user" />
+          <button
+            onClick={onLogout}
+            title="Log out"
+            style={{
+              width: "100%",
+              background: "none",
+              border: "none",
+              color: "rgba(255,255,255,0.5)",
+              cursor: "pointer",
+              fontSize: 16,
+              padding: "8px 0",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onMouseEnter={e => e.currentTarget.style.color = "#fff"}
+            onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.5)"}
+          >
+            <i className="fa-solid fa-right-from-bracket" />
+          </button>
         )}
       </div>
     </div>

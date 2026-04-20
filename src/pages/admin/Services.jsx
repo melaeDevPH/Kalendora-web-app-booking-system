@@ -1,101 +1,105 @@
 import { useState } from "react";
+import { serviceStyles as s, serviceHover as hover } from "./styles/services";
 
 const delay = (ms = 400) => new Promise((res) => setTimeout(res, ms));
 
-// Button component
-const Btn = ({ children, onClick, variant = "default", disabled, style }) => {
-  const styles = {
-    default: { background: "#6366F1", color: "#fff" },
-    danger: { background: "#FEE2E2", color: "#991B1B" },
-    ghost: { background: "#F1F5F9", color: "#475569" },
-  };
-  const s = styles[variant] || styles.default;
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      style={{
-        border: "none",
-        borderRadius: 8,
-        cursor: disabled ? "not-allowed" : "pointer",
-        fontWeight: "600",
-        fontSize: 12,
-        padding: "8px 14px",
-        transition: "all 0.2s",
-        opacity: disabled ? 0.6 : 1,
-        ...s,
-        ...style,
-      }}
-      onMouseEnter={(e) => {
-        if (!disabled && variant === "default") e.target.style.background = "#4F46E5";
-      }}
-      onMouseLeave={(e) => {
-        if (!disabled && variant === "default") e.target.style.background = "#6366F1";
-      }}
-    >
-      {children}
-    </button>
-  );
-};
+/* ── Sub-components ───────────────────────────────────────────── */
+
+const Btn = ({ children, onClick, variant = "edit", disabled }) => (
+  <button
+    onClick={onClick}
+    disabled={disabled}
+    style={{ ...s.btn.base, ...s.btn[variant], opacity: disabled ? 0.6 : 1, cursor: disabled ? "not-allowed" : "pointer" }}
+    onMouseEnter={(e) => !disabled && hover.btnEnter(e.currentTarget)}
+    onMouseLeave={(e) => !disabled && hover.btnLeave(e.currentTarget)}
+  >
+    {children}
+  </button>
+);
+
+const FormField = ({ label, children, style }) => (
+  <div style={{ ...s.modal.fieldGap, ...style }}>
+    <label style={s.modal.label}>{label}</label>
+    {children}
+  </div>
+);
+
+const FormInput = ({ type = "text", value, onChange, placeholder, step }) => (
+  <input
+    type={type}
+    step={step}
+    value={value}
+    onChange={onChange}
+    placeholder={placeholder}
+    style={s.modal.input}
+    onFocus={(e) => hover.inputFocus(e.target)}
+    onBlur={(e)  => hover.inputBlur(e.target)}
+  />
+);
+
+const ServiceCard = ({ service, onEdit, onDelete }) => (
+  <div
+    style={s.card.wrapper}
+    onMouseEnter={(e) => hover.cardEnter(e.currentTarget)}
+    onMouseLeave={(e) => hover.cardLeave(e.currentTarget)}
+  >
+    
+    <h3 style={s.card.name}>{service.name}</h3>
+    <p style={s.card.category}>{service.category}</p>
+    <p style={s.card.description}>{service.description}</p>
+
+    <div style={s.card.detailsRow}>
+      <div>
+        <div style={s.card.price}>${service.price}</div>
+        <div style={s.card.duration}>{service.duration} min</div>
+      </div>
+    </div>
+
+    <div style={s.card.actionRow}>
+      <Btn variant="edit"   onClick={() => onEdit(service)}>Edit</Btn>
+      <Btn variant="delete" onClick={() => onDelete(service.id)}>Delete</Btn>
+    </div>
+  </div>
+);
+
+/* ── Main component ───────────────────────────────────────────── */
 
 const AdminServices = ({ services, setServices }) => {
-  const [modal, setModal] = useState(null);
-  const [form, setForm] = useState({});
+  const [modal, setModal]     = useState(null);
+  const [form, setForm]       = useState({});
   const [loading, setLoading] = useState(false);
 
+  const field = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
+
   const openAdd = () => {
-    setForm({
-      name: "",
-      duration: 60,
-      price: 0,
-      category: "",
-      description: "",
-      icon: "⭐",
-    });
+    setForm({ name: "", duration: 60, price: 0, category: "", description: "", icon: "fa-star" });
     setModal("add");
   };
 
-  const openEdit = (s) => {
-    setForm({ ...s });
-    setModal(s.id);
-  };
+  const openEdit = (svc) => { setForm({ ...svc }); setModal(svc.id); };
 
   const handleDelete = async (id) => {
-    if (confirm("Are you sure you want to delete this service?")) {
-      await delay(300);
-      setServices((p) => p.filter((s) => s.id !== id));
-    }
+    if (!confirm("Delete this service?")) return;
+    await delay(300);
+    setServices((prev) => prev.filter((s) => s.id !== id));
   };
 
   const handleSave = async () => {
-    if (!form.name) {
-      alert("Please enter a service name");
-      return;
-    }
+    if (!form.name) { alert("Please enter a service name"); return; }
     setLoading(true);
     await delay(400);
 
     if (modal === "add") {
-      setServices((p) => [
-        ...p,
-        {
-          ...form,
-          id: Date.now(),
-          price: Number(form.price),
-          duration: Number(form.duration),
-        },
+      setServices((prev) => [
+        ...prev,
+        { ...form, id: Date.now(), price: Number(form.price), duration: Number(form.duration) },
       ]);
     } else {
-      setServices((p) =>
-        p.map((s) =>
-          s.id === modal
-            ? {
-              ...s,
-              ...form,
-              price: Number(form.price),
-              duration: Number(form.duration),
-            }
-            : s
+      setServices((prev) =>
+        prev.map((svc) =>
+          svc.id === modal
+            ? { ...svc, ...form, price: Number(form.price), duration: Number(form.duration) }
+            : svc
         )
       );
     }
@@ -104,383 +108,91 @@ const AdminServices = ({ services, setServices }) => {
     setModal(null);
   };
 
-  const ICONS = ["✂", "💆", "💼", "✨", "🏋", "💅", "🎨", "🧪", "📚", "🎵", "🧘", "❤️"];
-
   return (
-    <div style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}>
+    <div style={s.page}>
+      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;900&display=swap" rel="stylesheet" />
+
       {/* Header */}
-      <div style={{ marginBottom: 28 }}>
-        <h1
-          style={{
-            margin: "0 0 8px",
-            fontSize: "clamp(24px, 5vw, 32px)",
-            fontWeight: "800",
-            color: "#0F172A",
-          }}
+      <div style={s.header.wrapper}>
+        <h1 style={s.header.title}>Services</h1>
+        <p style={s.header.subtitle}>Manage your available services</p>
+      </div>
+
+      {/* Add button */}
+      <div style={s.addRow}>
+        <button
+          style={s.addBtn}
+          onClick={openAdd}
+          onMouseEnter={(e) => hover.btnEnter(e.currentTarget)}
+          onMouseLeave={(e) => hover.btnLeave(e.currentTarget)}
         >
-          ⭐ Services
-        </h1>
-        <p style={{ margin: 0, color: "#64748B", fontSize: 15 }}>
-          Manage your available services
-        </p>
+          + Add Service
+        </button>
       </div>
 
-      {/* ADD BUTTON */}
-      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 24 }}>
-        <Btn onClick={openAdd}>+ Add Service</Btn>
-      </div>
-
-      {/* SERVICES GRID OR TABLE */}
+      {/* Empty state */}
       {services.length === 0 ? (
-        <div
-          style={{
-            textAlign: "center",
-            padding: "64px 24px",
-            background: "#fff",
-            borderRadius: 16,
-            border: "1.5px solid #F1F5F9",
-          }}
-        >
-          <div style={{ fontSize: 48, marginBottom: 12 }}>➕</div>
-          <p
-            style={{
-              fontWeight: "700",
-              color: "#0F172A",
-              margin: "0 0 6px",
-              fontSize: 16,
-            }}
-          >
-            No services yet
-          </p>
-          <p style={{ color: "#94A3B8", fontSize: 14, margin: 0 }}>
-            Create your first service to get started
-          </p>
+        <div style={s.empty.wrapper}>
+          <p style={s.empty.title}>No services yet</p>
+          <p style={s.empty.sub}>Create your first service to get started</p>
         </div>
       ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-            gap: 16,
-          }}
-        >
-          {services.map((s) => (
-            <div
-              key={s.id}
-              style={{
-                background: "#fff",
-                borderRadius: 14,
-                border: "1.5px solid #F1F5F9",
-                padding: "20px",
-                transition: "all 0.2s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "#C7D2FE";
-                e.currentTarget.style.boxShadow =
-                  "0 4px 16px rgba(99, 102, 241, 0.08)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "#F1F5F9";
-                e.currentTarget.style.boxShadow = "none";
-              }}
-            >
-              {/* Icon & Title */}
-              <div style={{ position: "relative", marginBottom: 12 }}>
-                <div
-                  style={{
-                    width: 56,
-                    height: 56,
-                    background: "#EEF2FF",
-                    borderRadius: 12,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 28,
-                    marginBottom: 12,
-                  }}
-                >
-                  {s.icon}
-                </div>
-                <h3
-                  style={{
-                    margin: "0 0 4px",
-                    fontSize: 16,
-                    fontWeight: "800",
-                    color: "#0F172A",
-                  }}
-                >
-                  {s.name}
-                </h3>
-                <p
-                  style={{
-                    margin: 0,
-                    fontSize: 12,
-                    color: "#94A3B8",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.5px",
-                    fontWeight: "600",
-                  }}
-                >
-                  {s.category}
-                </p>
-              </div>
-
-              {/* Description */}
-              <p
-                style={{
-                  margin: "0 0 12px",
-                  fontSize: 13,
-                  color: "#64748B",
-                  lineHeight: 1.5,
-                  minHeight: 40,
-                }}
-              >
-                {s.description}
-              </p>
-
-              {/* Details */}
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  paddingBottom: 12,
-                  borderBottom: "1px solid #F1F5F9",
-                  marginBottom: 12,
-                }}
-              >
-                <div>
-                  <div style={{ fontSize: 18, fontWeight: "800", color: "#0F172A" }}>
-                    ${s.price}
-                  </div>
-                  <div style={{ fontSize: 12, color: "#94A3B8" }}>{s.duration}m</div>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                <Btn onClick={() => openEdit(s)}>✏️ Edit</Btn>
-                <Btn variant="danger" onClick={() => handleDelete(s.id)}>
-                  🗑️ Delete
-                </Btn>
-              </div>
-            </div>
+        <div style={s.grid}>
+          {services.map((svc) => (
+            <ServiceCard key={svc.id} service={svc} onEdit={openEdit} onDelete={handleDelete} />
           ))}
         </div>
       )}
 
-      {/* MODAL */}
+      {/* Modal */}
       {modal !== null && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            background: "rgba(0,0,0,0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            padding: "16px",
-            zIndex: 1000,
-          }}
-        >
-          <div
-            style={{
-              background: "#fff",
-              padding: "28px",
-              borderRadius: 16,
-              width: "100%",
-              maxWidth: 480,
-              maxHeight: "90vh",
-              overflowY: "auto",
-              boxShadow: "0 20px 60px rgba(0,0,0,0.15)",
-            }}
-          >
-            <h2
-              style={{
-                margin: "0 0 20px",
-                fontSize: 22,
-                fontWeight: "800",
-                color: "#0F172A",
-              }}
-            >
-              {modal === "add" ? "➕ Add Service" : "✏️ Edit Service"}
+        <div style={s.modal.overlay}>
+          <div style={s.modal.box}>
+            <h2 style={s.modal.title}>
+              {modal === "add" ? "Add Service" : "Edit Service"}
             </h2>
 
-            {/* ICON PICKER */}
-            <div style={{ marginBottom: 20 }}>
-              <label
-                style={{
-                  display: "block",
-                  fontSize: 12,
-                  fontWeight: "700",
-                  color: "#0F172A",
-                  marginBottom: 10,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.5px",
-                }}
-              >
-                Select Icon
-              </label>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 8 }}>
-                {ICONS.map((ic) => (
-                  <button
-                    key={ic}
-                    onClick={() => setForm((f) => ({ ...f, icon: ic }))}
-                    style={{
-                      background: form.icon === ic ? "#6366F1" : "#F1F5F9",
-                      border: "1.5px solid" + (form.icon === ic ? "#6366F1" : "#E2E8F0"),
-                      borderRadius: 10,
-                      padding: "10px",
-                      fontSize: 20,
-                      cursor: "pointer",
-                      transition: "all 0.2s",
-                    }}
-                  >
-                    {ic}
-                  </button>
-                ))}
-              </div>
+          
+            <FormField label="Service Name">
+              <FormInput value={form.name || ""} onChange={field("name")} placeholder="e.g., Haircut" />
+            </FormField>
+
+            <FormField label="Category">
+              <FormInput value={form.category || ""} onChange={field("category")} placeholder="e.g., Hair" />
+            </FormField>
+
+            <div style={s.modal.twoCol}>
+              <FormField label="Duration (min)" style={{ marginBottom: 0 }}>
+                <FormInput type="number" value={form.duration || ""} onChange={field("duration")} />
+              </FormField>
+              <FormField label="Price ($)" style={{ marginBottom: 0 }}>
+                <FormInput type="number" step="0.01" value={form.price || ""} onChange={field("price")} />
+              </FormField>
             </div>
 
-            {/* INPUTS */}
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ fontSize: 12, fontWeight: "700", color: "#0F172A", display: "block", marginBottom: 6 }}>
-                Service Name
-              </label>
-              <input
-                type="text"
-                placeholder="e.g., Haircut"
-                value={form.name || ""}
-                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                style={{
-                  width: "100%",
-                  border: "1.5px solid #E2E8F0",
-                  borderRadius: 10,
-                  padding: "11px 14px",
-                  fontSize: 14,
-                  outline: "none",
-                  boxSizing: "border-box",
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ fontSize: 12, fontWeight: "700", color: "#0F172A", display: "block", marginBottom: 6 }}>
-                Category
-              </label>
-              <input
-                type="text"
-                placeholder="e.g., Hair"
-                value={form.category || ""}
-                onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
-                style={{
-                  width: "100%",
-                  border: "1.5px solid #E2E8F0",
-                  borderRadius: 10,
-                  padding: "11px 14px",
-                  fontSize: 14,
-                  outline: "none",
-                  boxSizing: "border-box",
-                }}
-              />
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
-              <div>
-                <label style={{ fontSize: 12, fontWeight: "700", color: "#0F172A", display: "block", marginBottom: 6 }}>
-                  Duration (min)
-                </label>
-                <input
-                  type="number"
-                  value={form.duration || ""}
-                  onChange={(e) => setForm((f) => ({ ...f, duration: e.target.value }))}
-                  style={{
-                    width: "100%",
-                    border: "1.5px solid #E2E8F0",
-                    borderRadius: 10,
-                    padding: "11px 14px",
-                    fontSize: 14,
-                    outline: "none",
-                    boxSizing: "border-box",
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{ fontSize: 12, fontWeight: "700", color: "#0F172A", display: "block", marginBottom: 6 }}>
-                  Price ($)
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={form.price || ""}
-                  onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
-                  style={{
-                    width: "100%",
-                    border: "1.5px solid #E2E8F0",
-                    borderRadius: 10,
-                    padding: "11px 14px",
-                    fontSize: 14,
-                    outline: "none",
-                    boxSizing: "border-box",
-                  }}
-                />
-              </div>
-            </div>
-
-            <div style={{ marginBottom: 24 }}>
-              <label style={{ fontSize: 12, fontWeight: "700", color: "#0F172A", display: "block", marginBottom: 6 }}>
-                Description
-              </label>
+            <FormField label="Description">
               <textarea
-                placeholder="Describe your service"
                 value={form.description || ""}
-                onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                onChange={field("description")}
+                placeholder="Describe your service"
                 rows={3}
-                style={{
-                  width: "100%",
-                  border: "1.5px solid #E2E8F0",
-                  borderRadius: 10,
-                  padding: "11px 14px",
-                  fontSize: 14,
-                  outline: "none",
-                  boxSizing: "border-box",
-                  fontFamily: "inherit",
-                  resize: "vertical",
-                }}
+                style={{ ...s.modal.input, resize: "vertical" }}
+                onFocus={(e) => hover.inputFocus(e.target)}
+                onBlur={(e)  => hover.inputBlur(e.target)}
               />
-            </div>
+            </FormField>
 
-            {/* ACTIONS */}
-            <div style={{ display: "flex", gap: 12 }}>
+            <div style={s.modal.actionRow}>
               <button
                 onClick={() => setModal(null)}
-                style={{
-                  flex: 1,
-                  padding: "12px 16px",
-                  border: "1.5px solid #E2E8F0",
-                  borderRadius: 10,
-                  background: "#fff",
-                  color: "#475569",
-                  fontSize: 14,
-                  fontWeight: "600",
-                  cursor: "pointer",
-                  transition: "all 0.2s",
-                }}
-                onMouseEnter={(e) => (e.target.style.background = "#F8FAFC")}
-                onMouseLeave={(e) => (e.target.style.background = "#fff")}
+                style={s.btn.cancel}
+                onMouseEnter={(e) => hover.cancelEnter(e.currentTarget)}
+                onMouseLeave={(e) => hover.cancelLeave(e.currentTarget)}
               >
                 Cancel
               </button>
-              <Btn
-                onClick={handleSave}
-                disabled={loading}
-                style={{ flex: 1, padding: "12px 16px" }}
-              >
-                {loading ? "Saving..." : "Save"}
+              <Btn variant="save" onClick={handleSave} disabled={loading}>
+                {loading ? "Saving…" : "Save"}
               </Btn>
             </div>
           </div>
