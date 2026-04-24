@@ -1,9 +1,7 @@
 import { purple } from "./color.js";
+import './font.css'
 
 export const scheduleStyles = {
-    page: {
-        fontFamily: "'DM Sans', system-ui, sans-serif",
-    },
 
     header: {
         wrapper: { marginBottom: 28 },

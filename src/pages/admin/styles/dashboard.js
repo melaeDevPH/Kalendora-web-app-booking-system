@@ -3,12 +3,6 @@ import './font.css'
 
 export const styles = {
 
-  page: {
-    minHeight: "100vh",
-    padding: "32px 28px",
-    maxWidth: 1280,
-    margin: "0 auto",
-  },
 
   header: {
     wrapper: { marginBottom: 32, display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 },

@@ -2,12 +2,7 @@ import { purple } from "./color";
 import './font.css';
 
 export const bookingStyles = {
-  page: {
-    padding: "32px 28px",
-    maxWidth: 1280,
-    margin: "0 auto",
-    minHeight: "100vh",
-  },
+
 
   header: {
     wrapper: { marginBottom: 24 },

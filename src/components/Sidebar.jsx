@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 
 const ITEM_HEIGHT = 54;
-const BG = "#18283b";
+const BG = "#0f3b55";
 
 export default function Sidebar({
   user, page, setPage, open, setOpen, isMobile, collapsed, setCollapsed, onLogout

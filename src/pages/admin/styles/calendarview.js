@@ -1,33 +1,5 @@
-// calendarView.js — styles for AdminCalendarView
-// Matches the existing purple/DM Sans design system
 
 export const calendarStyles = {
-  page: {
-    fontFamily: "'DM Sans', sans-serif",
-    padding: "28px 24px",
-    maxWidth: 1100,
-    margin: "0 auto",
-    color: "#1a1535",
-  },
-
-  header: {
-    wrapper: {
-      marginBottom: 28,
-    },
-    title: {
-      fontSize: 26,
-      fontWeight: 900,
-      margin: 0,
-      color: "#1a1535",
-      letterSpacing: "-0.5px",
-    },
-    subtitle: {
-      fontSize: 13,
-      color: "#9b94c1",
-      margin: "4px 0 0",
-      fontWeight: 500,
-    },
-  },
 
   nav: {
     wrapper: {
