@@ -1,14 +1,19 @@
 import { purple } from "./color";
+import './font.css';
 
 export const bookingStyles = {
+
   page: {
-    fontFamily: "'DM Sans', system-ui, sans-serif",
+    padding: "32px 28px",
+    maxWidth: 1280,
+    margin: "0 auto",
+    minHeight: "100vh",
   },
 
   header: {
-    wrapper: { marginBottom: 28 },
+    wrapper: { marginBottom: 24 },
     title: {
-      margin: "0 0 6px",
+      margin: "0 0 4px",
       fontSize: "clamp(22px, 5vw, 28px)",
       fontWeight: 900,
       color: purple[900],
@@ -21,11 +26,117 @@ export const bookingStyles = {
     },
   },
 
+  // ── Upcoming alerts ──────────────────────────────────────────
+  alert: {
+    wrapper: {
+      marginBottom: 20,
+      display: "flex",
+      flexDirection: "column",
+      gap: 8,
+    },
+    item: {
+      display: "flex",
+      alignItems: "center",
+      gap: 12,
+      background: "#FFF7ED",
+      border: "1px solid #FED7AA",
+      borderRadius: 12,
+      padding: "12px 16px",
+      fontSize: 13,
+    },
+    iconBox: {
+      width: 32,
+      height: 32,
+      borderRadius: 8,
+      background: "#FED7AA",
+      color: "#C2410C",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: 13,
+      flexShrink: 0,
+    },
+    text: {
+      flex: 1,
+    },
+    bold: {
+      fontWeight: 700,
+      color: "#9A3412",
+      marginRight: 4,
+    },
+    sub: {
+      color: "#C2410C",
+      fontSize: 12,
+    },
+    dismiss: {
+      background: "none",
+      border: "none",
+      cursor: "pointer",
+      color: "#FDA974",
+      fontSize: 13,
+      padding: 4,
+      borderRadius: 6,
+      transition: "color 0.15s",
+      flexShrink: 0,
+    },
+    badge: {
+      fontSize: 10,
+      fontWeight: 700,
+      background: "#C2410C",
+      color: "#fff",
+      borderRadius: 999,
+      padding: "2px 7px",
+      letterSpacing: "0.4px",
+      textTransform: "uppercase",
+      marginLeft: 6,
+      flexShrink: 0,
+    },
+  },
+
+  // ── Status summary strip ──────────────────────────────────────
+  strip: {
+    wrapper: {
+      display: "flex",
+      gap: 8,
+      marginBottom: 20,
+      flexWrap: "wrap",
+    },
+    pill: (active, color) => ({
+      display: "flex",
+      alignItems: "center",
+      gap: 7,
+      padding: "8px 16px",
+      borderRadius: 999,
+      border: `1.5px solid ${active ? color.border : "#E8E4FF"}`,
+      background: active ? color.bg : "#fff",
+      color: active ? color.text : "#888",
+      fontSize: 12,
+      fontWeight: 700,
+      cursor: "pointer",
+      letterSpacing: "0.2px",
+      transition: "all 0.15s",
+      fontFamily: "'DM Sans', system-ui, sans-serif",
+    }),
+    dot: (color) => ({
+      width: 7,
+      height: 7,
+      borderRadius: "50%",
+      background: color,
+      flexShrink: 0,
+    }),
+    count: (active) => ({
+      fontSize: 11,
+      fontWeight: 800,
+      opacity: active ? 1 : 0.5,
+    }),
+  },
+
+  // ── Filters row ───────────────────────────────────────────────
   filters: {
     wrapper: {
       display: "flex",
       gap: 10,
-      marginBottom: 24,
+      marginBottom: 20,
       flexWrap: "wrap",
       alignItems: "center",
     },
@@ -55,6 +166,22 @@ export const bookingStyles = {
       color: purple[900],
       transition: "border-color 0.2s",
     },
+    sortBtn: (active) => ({
+      display: "flex",
+      alignItems: "center",
+      gap: 6,
+      border: `1.5px solid ${active ? purple[400] : purple[100]}`,
+      borderRadius: 10,
+      padding: "10px 14px",
+      fontSize: 12,
+      fontWeight: 700,
+      background: active ? purple[50] : "#fff",
+      color: active ? purple[600] : "#aaa",
+      cursor: "pointer",
+      fontFamily: "'DM Sans', system-ui, sans-serif",
+      transition: "all 0.15s",
+      whiteSpace: "nowrap",
+    }),
   },
 
   empty: {
@@ -122,7 +249,7 @@ export const bookingStyles = {
       color: "#bbb",
       marginTop: 2,
     },
-    tdStatus: { padding: "14px 18px" },
+    tdStatus:  { padding: "14px 18px" },
     tdActions: { padding: "14px 18px" },
     actionRow: { display: "flex", gap: 6, flexWrap: "wrap" },
   },
@@ -163,7 +290,6 @@ export const bookingStyles = {
       fontSize: 12,
       color: "#888",
     },
-    actionRow: { display: "flex", gap: 6, flexWrap: "wrap" },
   },
 
   // Buttons
@@ -195,12 +321,23 @@ export const bookingStyles = {
       fontWeight: 700,
       letterSpacing: "0.4px",
       textTransform: "uppercase",
+      display: "inline-flex",
+      alignItems: "center",
+      gap: 5,
     },
     variants: {
       pending:   { background: "#FEF9C3", color: "#854D0E" },
       approved:  { background: "#DCFCE7", color: "#166534" },
       cancelled: { background: "#FFE4E6", color: "#9F1239" },
     },
+    dot: (status) => ({
+      width: 5,
+      height: 5,
+      borderRadius: "50%",
+      background: status === "approved"  ? "#22C55E"
+                : status === "cancelled" ? "#F43F5E"
+                : "#FBBF24",
+    }),
   },
 };
 
@@ -213,8 +350,10 @@ export const bookingHover = {
     el.style.borderColor = purple[50];
     el.style.boxShadow = "none";
   },
-  rowEnter: (el) => { el.style.background = purple[50]; },
-  rowLeave: (el) => { el.style.background = "transparent"; },
+  rowEnter:   (el) => { el.style.background = "#FAFAFF"; },
+  rowLeave:   (el) => { el.style.background = "transparent"; },
   inputFocus: (el) => { el.style.borderColor = purple[400]; },
   inputBlur:  (el) => { el.style.borderColor = purple[100]; },
+  btnEnter:   (el) => { el.style.opacity = "0.8"; },
+  btnLeave:   (el) => { el.style.opacity = "1"; },
 };
