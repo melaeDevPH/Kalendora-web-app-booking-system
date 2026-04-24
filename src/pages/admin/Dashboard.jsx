@@ -67,22 +67,16 @@ export default function AdminDashboard({ bookings }) {
   const maxSvc = topServices[0]?.[1] || 1;
 
   const statCards = [
-    { label: "Total bookings", value: bookings.length,  icon: "fa-calendar-check" },
-    { label: "Today",          value: todayBk,          icon: "fa-sun" },
-    { label: "Pending",        value: pending,           icon: "fa-clock" },
-    { label: "Cancelled",      value: cancelled,         icon: "fa-ban" },
+    { label: "Total Events Booked", value: bookings.length, icon: "fa-calendar-check" },
+    { label: "Today's Events",      value: todayBk,         icon: "fa-calendar-day" },
+    { label: "Pending Requests",    value: pending,         icon: "fa-hourglass-half" },
+    { label: "Cancelled Events",    value: cancelled,       icon: "fa-calendar-times" },
   ];
-
   return (
     <div style={styles.page}>
-      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
-
+   
       {/* Header */}
       <div style={styles.header.wrapper}>
-        <div style={styles.header.eyebrow}>
-          <div style={styles.header.dot} />
-          <span style={styles.header.label}>Admin</span>
-        </div>
         <h1 style={styles.header.title}>Dashboard</h1>
         <p style={styles.header.date}>
           {today.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
@@ -117,8 +111,8 @@ export default function AdminDashboard({ bookings }) {
       <div style={styles.grid.charts}>
         {/* 7-day bar chart */}
         <div style={styles.card.base}>
-          <p style={styles.cardHeader.eyebrow}>Last 7 days</p>
-          <p style={styles.cardHeader.title}>{bookings.length} bookings</p>
+       <p style={styles.cardHeader.eyebrow}>Event Activity</p>
+        <p style={styles.cardHeader.title}>{bookings.length} total bookings</p>
           <div style={styles.bar.wrapper}>
             {last7.map((d, i) => {
               const isToday = i === 6;
@@ -134,19 +128,22 @@ export default function AdminDashboard({ bookings }) {
 
         {/* Status breakdown */}
         <div style={styles.card.base}>
-          <p style={styles.cardHeader.eyebrow}>Status</p>
+          <p style={styles.cardHeader.eyebrow}>Booking Status</p>
           <p style={styles.cardHeader.title}>
-            {bookings.length > 0 ? `${Math.round((approved / bookings.length) * 100)}% approved` : "No data"}
+            {bookings.length > 0 
+              ? `${Math.round((approved / bookings.length) * 100)}% confirmed`
+              : "No data"}
           </p>
-          <MiniBar label="Approved"  value={approved}  max={bookings.length} />
-          <MiniBar label="Pending"   value={pending}   max={bookings.length} />
+
+          <MiniBar label="Confirmed" value={approved} max={bookings.length} />
+          <MiniBar label="Pending Approval" value={pending} max={bookings.length} />
           <MiniBar label="Cancelled" value={cancelled} max={bookings.length} />
-        </div>
+                  </div>
 
         {/* Popular services */}
         <div style={styles.card.base}>
-          <p style={styles.cardHeader.eyebrow}>Popular</p>
-          <p style={styles.cardHeader.title}>Services</p>
+       <p style={styles.cardHeader.eyebrow}>Top</p>
+      <p style={styles.cardHeader.title}>Event Types</p>
           {topServices.length === 0
             ? <p style={{ fontSize: 13, color: "#ccc" }}>No data yet</p>
             : topServices.map(([name, count]) => (
@@ -160,8 +157,8 @@ export default function AdminDashboard({ bookings }) {
       <div style={styles.card.noPadding}>
         <div style={styles.recentHeader.wrapper}>
           <div>
-            <p style={styles.recentHeader.eyebrow}>Recent</p>
-            <p style={styles.recentHeader.title}>Bookings</p>
+          <p style={styles.recentHeader.eyebrow}>Recent Activity</p>
+          <p style={styles.recentHeader.title}>Event Bookings</p>
           </div>
           <span style={styles.recentHeader.badge}>{bookings.length} total</span>
         </div>
@@ -177,7 +174,7 @@ export default function AdminDashboard({ bookings }) {
             <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
               <thead>
                 <tr>
-                  {["Client", "Service", "Date & Time", "Status"].map(h => (
+              {["Client", "Event Type", "Schedule", "Status"].map(h => (
                     <th key={h} style={styles.table.th}>{h}</th>
                   ))}
                 </tr>

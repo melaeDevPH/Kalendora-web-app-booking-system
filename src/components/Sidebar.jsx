@@ -52,7 +52,7 @@ export default function Sidebar({
         flexShrink: 0,
       }}>
         {!isCollapsed && (
-          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600 }}>Kalendora</h2>
+          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600 }}>Orbix Events</h2>
         )}
 
         {/* Desktop: collapse toggle inside sidebar header */}

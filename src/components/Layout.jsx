@@ -47,7 +47,7 @@ export default function Layout({ user, page, setPage, onLogout, children }) {
       <div style={{
         flex: 1,
         marginLeft: sidebarWidth,
-        background: "#F8FAFC",
+  
         minHeight: "100vh",
         transition: "margin-left 0.25s ease",
       }}>

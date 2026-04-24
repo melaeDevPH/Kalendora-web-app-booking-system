@@ -1,12 +1,6 @@
 import {purple} from './color.js';
 
 export const styles = {
-  page: {
-    fontFamily: "'DM Sans', system-ui, sans-serif",
-    background: "#FAFAFF",
-    minHeight: "100vh",
-    padding: "32px 24px",
-  },
 
   header: {
     wrapper: { marginBottom: 36 },
@@ -32,7 +26,7 @@ export const styles = {
     title: {
       margin: 0,
       fontSize: 28,
-      fontWeight: 900,
+      fontWeight: 700,
       color: purple[900],
       letterSpacing: "-0.8px",
     },
