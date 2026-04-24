@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
-import ClientRescheduleModal from "../../components/modal/ClientReSched";
-import BookingDetailDrawer   from "./BookingDetailDrawer";
-import AdminCalendarView     from "./AdminCalendarView";
+import ClientRescheduleModal from "../../components/modal/ClientReSched.jsx";
+import BookingDetailDrawer   from "./BookingDetaildrawer.jsx";
+import AdminCalendarView     from "./AdminCalendarView.jsx";
 import { bookingStyles as s, bookingHover as hover } from "./styles/booking.js";
 
 const delay = (ms = 400) => new Promise((res) => setTimeout(res, ms));
