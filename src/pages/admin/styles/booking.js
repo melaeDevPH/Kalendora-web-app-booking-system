@@ -2,7 +2,6 @@ import { purple } from "./color";
 import './font.css';
 
 export const bookingStyles = {
-
   page: {
     padding: "32px 28px",
     maxWidth: 1280,
