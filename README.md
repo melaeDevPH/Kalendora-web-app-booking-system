@@ -1,16 +1,66 @@
-# React + Vite
+# Orbix Events
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern event scheduling and booking management web application designed for streamlined event coordination and admin control.
 
-Currently, two official plugins are available:
+Built as a side project to explore real-world system design, booking workflows, and scalable backend architecture.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Overview
 
-## React Compiler
+Orbix Events is a web-based event management system that allows users to schedule, manage, and track event bookings efficiently. It also provides an admin interface for handling reservations, monitoring schedules, and managing event data.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+This project is currently in active development, with backend systems still being designed and implemented.
 
-## Expanding the ESLint configuration
+## Purpose
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+This project is built for learning and exploration of:
+
+- Event booking system architecture
+- Admin dashboard workflows
+- State management for scheduling systems
+- Scalable backend design concepts
+- Real-world CRUD and scheduling logic
+
+## Tech Stack
+
+- Frontend: React
+- Styling: Tailwind CSS
+- Backend: In progress (system design ongoing)
+- Database: Planned / evolving architecture
+
+## Features
+
+### Current
+- Basic event scheduling UI
+- Admin layout structure
+- Booking flow prototype
+- Responsive interface
+
+### In Progress
+- Backend API integration
+- Authentication system (admin and user roles)
+- Event availability logic
+- Booking validation system
+
+### Planned
+- Calendar-based scheduling view
+- Email notifications
+- Real-time booking updates
+- Analytics dashboard for admins
+- Role-based access control
+
+## System Focus
+
+- Clean separation of booking logic and UI
+- Scalable event scheduling design
+- Admin-first architecture
+- Extensible backend structure for future growth
+
+## Status
+
+Early development stage  
+Experimental system design  
+Not production-ready
+
+## Notes
+
+Orbix Events started as a redesign of Kalendora, evolving into a more structured and scalable event booking system. The goal is to simulate real-world SaaS-level booking platforms while keeping the implementation lightweight and modular.
