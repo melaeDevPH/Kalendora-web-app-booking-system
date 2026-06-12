@@ -1,4 +1,5 @@
-# Orbix Events
+
+## Orbix Events
 
 A modern event scheduling and booking management web application designed for streamlined event coordination and admin control.
 
@@ -10,6 +11,9 @@ Orbix Events is a web-based event management system that allows users to schedul
 
 This project is currently in active development, with backend systems still being designed and implemented.
 
+<img width="1365" height="605" alt="Screenshot 2026-05-23 141112" src="https://github.com/user-attachments/assets/40505796-4bc2-4592-8e9e-98368036620f" />
+<img width="1361" height="600" alt="Screenshot 2026-05-23 141200" src="https://github.com/user-attachments/assets/df4d1a86-a36b-434d-93e6-c1b11cfb209b" />
+<img width="1359" height="599" alt="Screenshot 2026-05-23 140949" src="https://github.com/user-attachments/assets/dd65719f-56a3-480c-b7e2-ee6313dd533a" />
 ## Purpose
 
 This project is built for learning and exploration of:
